@@ -12,7 +12,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 export interface TodoDialogData {
-  todo?: TODO;
+  todos?: TODO[];
   mode: string; // 'create' | 'update'
 }
 
@@ -22,13 +22,16 @@ export interface TodoDialogData {
   styleUrls: ["./todo-dialog.component.scss"],
 })
 export class TodoDialogComponent implements OnInit {
-  todoForm: FormGroup;
+  todosForm: FormGroup;
   name: string;
   type: string;
   dependencies: TODO;
   description: string;
+
   types: string[] = [];
   todoList: TODO[] = [];
+  filteredTodoList: TODO[] = [];
+  mode: string = "create"; // 'create' | 'update'
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,20 +40,64 @@ export class TodoDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: TodoDialogData
   ) {}
 
+  get todosFormArray(): FormArray {
+    return this.todosForm.get("todos") as FormArray;
+  }
+
   ngOnInit() {
-    this.todoService.getTodos().subscribe((todos) => (this.todoList = todos));
+    this.mode = this.data.mode;
+    console.log("qqqq", this.data);
+    this.todoService.getTodos().subscribe((todos) => {
+      this.todoList = todos;
+      this.filteredTodoList = this.todoList;
+    });
     this.todoService.getTypes().subscribe((types) => (this.types = types));
 
-    this.todoForm = this.formBuilder.group({
-      id: [this.data.todo?.id],
-      name: [this.data.todo?.name, [Validators.required]], // new FormControl(this.event.title),
-      type: [this.data.todo?.type, [Validators.required]],
-      dependencies: [this.data.todo?.dependencies, []],
-      description: [this.data.todo?.description, []],
+    const index = 0;
+    const formGroup = this.createTodoForm(this.data.todos[0], index);
+    this.todosForm = this.formBuilder.group({
+      todos: new FormArray([formGroup]),
     });
   }
+
+  addTodo() {
+    const index = this.todosFormArray.controls.length;
+    const formGroup = this.createTodoForm(null, index);
+    this.todosFormArray.push(formGroup);
+  }
+
+  createTodoForm(todo: TODO, index: number): FormGroup {
+    const formGroup = this.formBuilder.group({
+      index: [index],
+      id: [todo?.id],
+      name: [todo?.name, [Validators.required]],
+      type: [todo?.type, [Validators.required]],
+      dependencies: [todo?.dependencies, []],
+      description: [todo?.description, []],
+    });
+    formGroup.valueChanges.subscribe((value) => {
+      console.log("form " + index + ": value changed");
+    });
+    formGroup.get("type").valueChanges.subscribe((selectedType) => {
+      console.log("form " + index + ": type changed to: " + selectedType);
+      this.filteredTodoList = this.filterTodoListPerType(selectedType);
+    });
+    return formGroup;
+  }
+
+  filterTodoListPerType(type: string): TODO[] {
+    return this.todoList.filter((todo) => {
+      if (type === "Writing") {
+        return true;
+      } else {
+        return todo.type !== "Writing";
+      }
+    });
+  }
+  deleteTodoForm(index: number) {
+    this.todosFormArray.removeAt(index);
+  }
   save(): void {
-    this.todoService.updateTodoList(this.todoForm.value, this.data.mode);
-    this.dialogRef.close(this.todoForm.value);
+    this.dialogRef.close(this.todosForm.value);
   }
 }
