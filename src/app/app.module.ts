@@ -18,9 +18,16 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatIconModule } from "@angular/material/icon";
+import { TopBarComponent } from "./top-bar/top-bar.component";
+import { MatToolbarModule } from "@angular/material/toolbar";
 
 @NgModule({
-  declarations: [AppComponent, TodoListComponent, TodoDialogComponent],
+  declarations: [
+    AppComponent,
+    TodoListComponent,
+    TodoDialogComponent,
+    TopBarComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -36,6 +43,7 @@ import { MatIconModule } from "@angular/material/icon";
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    MatToolbarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
