@@ -1,42 +1,42 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, OnInit } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { TodoService } from "../todo.service";
+import { TodoDialogComponent } from "../todo-dialog/todo-dialog.component";
 
 export interface TODO {
   id: number;
   name: string;
-  type:  string; // = 'Coding' | 'Reading' | 'Writing';
+  type: string; // = 'Coding' | 'Reading' | 'Writing';
   description?: string;
   dependencies?: TODO;
 }
 
-
 @Component({
-  selector: 'app-todo-list',
-  templateUrl: './todo-list.component.html',
-  styleUrls: ['./todo-list.component.scss']
+  selector: "app-todo-list",
+  templateUrl: "./todo-list.component.html",
+  styleUrls: ["./todo-list.component.scss"],
 })
 export class TodoListComponent implements OnInit {
-
   todoList: TODO[];
 
   constructor(public dialog: MatDialog, public todoService: TodoService) {}
 
   ngOnInit() {
-    this.todoService.getTodos().subscribe(todos => this.todoList = todos);
+    this.todoService.getTodos().subscribe((todos) => (this.todoList = todos));
   }
 
   createTodo(): void {
-    const dialogRef = this.dialog.open(TodoDialog, {
-      width: '300px',
-      data: { mode: 'create' }
+    const dialogRef = this.dialog.open(TodoDialogComponent, {
+      width: "300px",
+      data: { mode: "create" },
     });
     dialogRef.afterClosed().subscribe((result: TODO) => {});
   }
 
   updateTodo(todo: TODO) {
-    const dialogRef = this.dialog.open(TodoDialog, {
-      width: '300px',
-      data: { todo: todo, mode: 'update' }
+    const dialogRef = this.dialog.open(TodoDialogComponent, {
+      width: "300px",
+      data: { todo: todo, mode: "update" },
     });
     dialogRef.afterClosed().subscribe((result: TODO) => {});
   }
@@ -44,6 +44,4 @@ export class TodoListComponent implements OnInit {
   deleteTodo(id: number) {
     this.todoService.deleteTodo(id);
   }
-}
-
 }

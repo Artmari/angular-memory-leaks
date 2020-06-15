@@ -22,10 +22,9 @@ import { MatSelectModule } from "@angular/material/select";
   declarations: [AppComponent, TodoListComponent, TodoDialogComponent],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
-    RouterModule.forRoot([{ path: "", component: TodoListComponent }]),
+    RouterModule.forRoot([{path: '', component: TodoListComponent}]),
     MatListModule,
     MatButtonModule,
     MatCardModule,
@@ -34,7 +33,7 @@ import { MatSelectModule } from "@angular/material/select";
     MatTooltipModule,
     FlexModule,
     MatInputModule,
-    MatSelectModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent],
