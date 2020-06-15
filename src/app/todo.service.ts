@@ -22,6 +22,7 @@ export class TodoService {
   }
 
   updateTodoList(todos: TODO[], mode: string) {
+    console.log('ryt', todos)
     // if the todo-dialog is opened with 'update' mode, it will contain only 1 TODO
     if (mode === 'update') {
       this.todoList[todos[0].id - 1] = todos[0];

@@ -98,6 +98,6 @@ export class TodoDialogComponent implements OnInit {
     this.todosFormArray.removeAt(index);
   }
   save(): void {
-    this.dialogRef.close(this.todosForm.value);
+    this.dialogRef.close(this.todosForm.value.todos);
   }
 }
