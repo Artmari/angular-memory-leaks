@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { TodoService } from "../todo.service";
 import { TodoDialogComponent } from "../todo-dialog/todo-dialog.component";
+import { Subject, Subscription } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 
 export interface TODO {
   id: number;
@@ -19,10 +21,15 @@ export interface TODO {
 export class TodoListComponent implements OnInit {
   todoList: TODO[];
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(public dialog: MatDialog, public todoService: TodoService) {}
 
   ngOnInit() {
-    this.todoService.getTodos().subscribe((todos) => (this.todoList = todos));
+    this.todoService
+      .getTodos()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((todos) => (this.todoList = todos));
   }
 
   openTodoDialog(mode: string, todo?: TODO): void {
@@ -40,5 +47,10 @@ export class TodoListComponent implements OnInit {
 
   deleteTodo(id: number) {
     this.todoService.deleteTodo(id);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
